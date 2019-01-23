@@ -105,10 +105,7 @@ namespace calc
                     {
                         string strTemp = null;
                         while (stack.TryPeek(out strTemp))
-                        {
-                            if(strTemp=="+" || strTemp=="-" || strTemp=="*" || strTemp=="/")
-                                outList.Add(stack.Pop());
-                        }
+                            outList.Add(stack.Pop());
                     }
                     stack.Push(i);
                 }

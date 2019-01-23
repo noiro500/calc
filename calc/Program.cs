@@ -63,17 +63,19 @@ namespace calc
             var parsedStr = parseStr.ReturnParsedString();
             List<string> outList=new List<string>();
 
-            Stack<string> stack=new Stack<string>();
-            
-            int tmp = 0;
+            var stack = new Stack<string>();
+
+            var tmp = 0;
             foreach (var i in parsedStr)
             {
-                if (Int32.TryParse(i, out tmp))
+                if (int.TryParse(i,
+                    out tmp))
                 {
                     outList.Add(i);
                     continue;
                 }
-                if (i=="/" || i=="*")
+
+                if (i == "/" || i == "*")
                 {
                     if (stack.Count == 0 || stack.Peek() == "+" || stack.Peek() == "-")
                     {
@@ -86,7 +88,7 @@ namespace calc
                         while (stack.TryPeek(out strTemp))
                         {
                             //string temp = stack.Peek();
-                            if (strTemp != "-" & strTemp != "+")
+                            if ((strTemp != "-") & (strTemp != "+"))
                                 outList.Add(stack.Pop());
                             break;
                         }
@@ -107,9 +109,11 @@ namespace calc
                         while (stack.TryPeek(out strTemp))
                             outList.Add(stack.Pop());
                     }
+
                     stack.Push(i);
                 }
             }
+
             while (stack.Count != 0)
                 outList.Add(stack.Pop());
 

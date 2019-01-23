@@ -9,18 +9,18 @@ namespace calc
         private int tmp;
         private string Temp { get; set; }
         private string inputString { get; set; }
-        private List<string> parserStr;
+        private List<string> parseStr;
         private Queue<string> queue;
 
         public CParser(string inputString)
         {
             this.inputString = inputString;
-            parserStr=new List<string>();
+            parseStr=new List<string>();
             queue=new Queue<string>();
             tmp = 0;
         }
 
-        public List<string> ReturnParserString()
+        public List<string> ReturnParsedString()
         {
             for (int i = 0; i < inputString.Length; i++)
             {
@@ -33,7 +33,7 @@ namespace calc
                         {
                             Temp += j.ToString();
                         }
-                        parserStr.Add(Temp);
+                        parseStr.Add(Temp);
                     }
                     continue;
                 }
@@ -44,13 +44,13 @@ namespace calc
                         Temp += j.ToString();
                     }
                     queue.Clear();
-                    parserStr.Add(Temp);
+                    parseStr.Add(Temp);
                     Temp = null;
-                    parserStr.Add(inputString[i].ToString());
+                    parseStr.Add(inputString[i].ToString());
                 }
             }
 
-            return parserStr;
+            return parseStr;
         }
 
     }
@@ -59,12 +59,69 @@ namespace calc
         static void Main(string[] args)
         {
             string inputString = Console.ReadLine();
-            //List<String> parserStr=new List<string>();
-            var parsedStr=new CParser(inputString);
-            var parseredStr = parsedStr.ReturnParserString();
-            
+            var parseStr=new CParser(inputString);
+            var parsedStr = parseStr.ReturnParsedString();
+            List<string> outList=new List<string>();
 
-            Console.ReadKey();
+            Stack<string> stack=new Stack<string>();
+            
+            int tmp = 0;
+            foreach (var i in parsedStr)
+            {
+                if (Int32.TryParse(i, out tmp))
+                {
+                    outList.Add(i);
+                    continue;
+                }
+                if (i=="/" || i=="*")
+                {
+                    if (stack.Count == 0 || stack.Peek() == "+" || stack.Peek() == "-")
+                    {
+                        stack.Push(i);
+                        continue;
+                    }
+                    else
+                    {
+                        string strTemp = null;
+                        while (stack.TryPeek(out strTemp))
+                        {
+                            //string temp = stack.Peek();
+                            if (strTemp != "-" & strTemp != "+")
+                                outList.Add(stack.Pop());
+                            break;
+                        }
+                        stack.Push(i);
+                    }
+                }
+
+                if (i == "+" || i == "-")
+                {
+                    if (stack.Count == 0)
+                    {
+                        stack.Push(i);
+                        continue;
+                    }
+                    else
+                    {
+                        string strTemp = null;
+                        while (stack.TryPeek(out strTemp))
+                        {
+                            if(strTemp=="+" || strTemp=="-" || strTemp=="*" || strTemp=="/")
+                                outList.Add(stack.Pop());
+                        }
+                    }
+                    stack.Push(i);
+                }
+            }
+            while (stack.Count != 0)
+                outList.Add(stack.Pop());
+
+            foreach (var i in outList)
+            {
+                Console.Write(i+" ");
+            }
+
+            Console.ReadLine();
         }
     }
 }

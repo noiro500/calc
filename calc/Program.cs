@@ -24,7 +24,7 @@ namespace calc
         {
             for (int i = 0; i < inputString.Length; i++)
             {
-                if (Int32.TryParse(inputString[i].ToString(), out tmp))
+                if (Int32.TryParse(inputString[i].ToString(), out tmp)|| inputString[i].ToString()==",")
                 {
                     queue.Enqueue(inputString[i].ToString());
                     if (i == inputString.Length - 1)
@@ -49,7 +49,6 @@ namespace calc
                     parseStr.Add(inputString[i].ToString());
                 }
             }
-
             return parseStr;
         }
 
@@ -58,31 +57,60 @@ namespace calc
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Разделитель целой и дробной части числа - ','\n");
             string inputString = Console.ReadLine();
             var parseStr=new CParser(inputString);
             var parsedStr = parseStr.ReturnParsedString();
             List<string> outList=new List<string>();
 
-            GetReversePilishNotation(ref parsedStr, ref outList);
+            GetReversePolishNotation(ref parsedStr, ref outList);
 
-
+#if DEBUG
             foreach (var i in outList)
             {
                 Console.Write(i+" ");
             }
+            Console.WriteLine();
+#endif
 
+            GetCalculation(ref outList, out var valueStack);
+        }
+
+        private static void GetCalculation(ref List<string> outList, out Stack<double> valueStack)
+        {
+            valueStack = new Stack<double>();
+            double optOne = 0, optTwo = 0, result = 0, tmpValue = 0;
+            foreach (var i in outList)
+            {
+                if (Double.TryParse(i, out tmpValue))
+                    valueStack.Push(tmpValue);
+                else
+                {
+                    optTwo = valueStack.Pop();
+                    optOne = valueStack.Pop();
+                    if (i == "+")
+                        result = optOne + optTwo;
+                    else if (i == "-")
+                        result = optOne - optTwo;
+                    else if (i == "*")
+                        result = optOne * optTwo;
+                    else if (i == "/")
+                        result = optOne / optTwo;
+                    valueStack.Push(result);
+                }
+            }
+            Console.WriteLine(valueStack.Pop());
             Console.ReadLine();
         }
 
-        private static void GetReversePilishNotation(ref List<string> parsedStr, ref List<string> outList)
+        private static void GetReversePolishNotation(ref List<string> parsedStr, ref List<string> outList)
         {
             var stack = new Stack<string>();
 
-            var tmp = 0;
+            double tmp = 0;
             foreach (var i in parsedStr)
             {
-                if (int.TryParse(i,
-                    out tmp))
+                if (Double.TryParse(i, out tmp))
                 {
                     outList.Add(i);
                     continue;
@@ -104,7 +132,6 @@ namespace calc
                                 outList.Add(stack.Pop());
                             break;
                         }
-
                         stack.Push(i);
                     }
                 }

@@ -63,6 +63,19 @@ namespace calc
             var parsedStr = parseStr.ReturnParsedString();
             List<string> outList=new List<string>();
 
+            GetReversePilishNotation(ref parsedStr, ref outList);
+
+
+            foreach (var i in outList)
+            {
+                Console.Write(i+" ");
+            }
+
+            Console.ReadLine();
+        }
+
+        private static void GetReversePilishNotation(ref List<string> parsedStr, ref List<string> outList)
+        {
             var stack = new Stack<string>();
 
             var tmp = 0;
@@ -87,11 +100,11 @@ namespace calc
                         string strTemp = null;
                         while (stack.TryPeek(out strTemp))
                         {
-                            //string temp = stack.Peek();
                             if ((strTemp != "-") & (strTemp != "+"))
                                 outList.Add(stack.Pop());
                             break;
                         }
+
                         stack.Push(i);
                     }
                 }
@@ -109,20 +122,11 @@ namespace calc
                         while (stack.TryPeek(out strTemp))
                             outList.Add(stack.Pop());
                     }
-
                     stack.Push(i);
                 }
             }
-
             while (stack.Count != 0)
                 outList.Add(stack.Pop());
-
-            foreach (var i in outList)
-            {
-                Console.Write(i+" ");
-            }
-
-            Console.ReadLine();
         }
     }
 }
